@@ -20,6 +20,7 @@ export default defineConfig({
       "@constants": path.resolve(__dirname, "./src/constants"),
       "@tools": path.resolve(__dirname, "./src/tools"),
       "@api": path.resolve(__dirname, "./src/api"),
+      "@types": path.resolve(__dirname, "./src/types"),
     },
   },
   css: {
