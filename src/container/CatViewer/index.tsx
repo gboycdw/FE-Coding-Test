@@ -33,7 +33,7 @@ export default function CatViewer() {
   useEffect(() => {
     const getImagesFn = async () => {
       setIsLoading(true);
-      const data = await getCatImages({ limit: 20 });
+      const data = await getCatImages({ limit: 20, page: 2 });
       setOriginalImages(data.data);
       setIsLoading(false);
     };
