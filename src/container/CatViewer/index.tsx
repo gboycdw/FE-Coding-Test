@@ -42,10 +42,14 @@ export default function CatViewer() {
   const fetchImages = async () => {
     setIsLoading(true);
     try {
-      const data = await getCatImages({ limit: 30, page });
-      setOriginalImages((prevImages) => [...prevImages, ...data.data]);
-      setPage((prevPage) => prevPage + 1);
-      setIsLoading(false);
+      const { data } = await getCatImages({ limit: 30, page });
+      if (data) {
+        setOriginalImages((prevImages) => [...prevImages, ...data]);
+        setPage((prevPage) => prevPage + 1);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 500);
+      }
     } catch (e) {
       window.alert(e);
       setIsLoading(false);
@@ -54,7 +58,10 @@ export default function CatViewer() {
 
   // 이미지 최초 로딩
   useEffect(() => {
-    fetchImages();
+    // 리렌더링 발생 시 이미지 강제 추가 로딩 방지
+    if (originalImages.length === 0) {
+      fetchImages();
+    }
   }, []);
 
   useEffect(() => {
@@ -100,7 +107,6 @@ export default function CatViewer() {
   // 무한스크롤 콜백 함수
   const loadMore = useCallback(
     (entries: IntersectionObserverEntry[]) => {
-      console.log("무한스크롤 체크 : ", entries[0].isIntersecting);
       const target = entries[0];
       if (target.isIntersecting && !isLoading) {
         fetchImages();
@@ -116,7 +122,7 @@ export default function CatViewer() {
     }
 
     observerRef.current = new IntersectionObserver(loadMore, {
-      threshold: 0.7,
+      threshold: 0.8,
     });
 
     if (loadMoreRef.current) {
@@ -160,22 +166,23 @@ export default function CatViewer() {
 
       {/* 스켈레톤 UI */}
       {isLoading && (
-        <div className={`flex space-x-4 justify-center mt-[16px]`}>
-          {Array.from({ length: columnCount }).map((_, columnIndex) => {
-            return (
-              <div key={columnIndex} className={`flex-1 space-y-4 w-full`}>
-                {Array.from({ length: 2 }).map((_, rowIndex) => (
-                  <div key={rowIndex}>
-                    <SkeletonImages key={rowIndex} />
-                  </div>
-                ))}
-              </div>
-            );
-          })}
+        <div className="flex flex-col">
+          <div className={`flex h-60 space-x-4 justify-center mt-[16px]`}>
+            {Array.from({ length: columnCount }).map((_, columnIndex) => {
+              return (
+                <div key={columnIndex} className={`flex-1 space-y-4 w-full`}>
+                  {Array.from({ length: 1 }).map((_, rowIndex) => (
+                    <div key={rowIndex}>
+                      <SkeletonImages key={rowIndex} />
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
-      {/* 무한스크롤 옵저버 */}
-      {!isLoading && <div ref={loadMoreRef} className="h-60"></div>}
+      {!isLoading && <div ref={loadMoreRef} className="h-10 mt-[16px]"></div>}
       {/* 이미지 확대 기능 */}
       {showEntireMode.show && (
         <div
