@@ -116,8 +116,7 @@ export default function CatViewer() {
     }
 
     observerRef.current = new IntersectionObserver(loadMore, {
-      rootMargin: "10px",
-      threshold: 1.0,
+      threshold: 0.7,
     });
 
     if (loadMoreRef.current) {
@@ -158,8 +157,6 @@ export default function CatViewer() {
         ))}
         {!images && <div>No images</div>}
       </div>
-      {/* 무한스크롤 옵저버 */}
-      {!isLoading && <div ref={loadMoreRef} className="h-[10px] mt-[16px]"></div>}
 
       {/* 스켈레톤 UI */}
       {isLoading && (
@@ -177,7 +174,8 @@ export default function CatViewer() {
           })}
         </div>
       )}
-
+      {/* 무한스크롤 옵저버 */}
+      {!isLoading && <div ref={loadMoreRef} className="h-60"></div>}
       {/* 이미지 확대 기능 */}
       {showEntireMode.show && (
         <div
