@@ -41,10 +41,15 @@ export default function CatViewer() {
 
   const fetchImages = async () => {
     setIsLoading(true);
-    const data = await getCatImages({ limit: 30, page });
-    setOriginalImages((prevImages) => [...prevImages, ...data.data]);
-    setPage((prevPage) => prevPage + 1);
-    setIsLoading(false);
+    try {
+      const data = await getCatImages({ limit: 30, page });
+      setOriginalImages((prevImages) => [...prevImages, ...data.data]);
+      setPage((prevPage) => prevPage + 1);
+      setIsLoading(false);
+    } catch (e) {
+      window.alert(e);
+      setIsLoading(false);
+    }
   };
 
   // 이미지 최초 로딩
@@ -95,6 +100,7 @@ export default function CatViewer() {
   // 무한스크롤 콜백 함수
   const loadMore = useCallback(
     (entries: IntersectionObserverEntry[]) => {
+      console.log("무한스크롤 체크 : ", entries[0].isIntersecting);
       const target = entries[0];
       if (target.isIntersecting && !isLoading) {
         fetchImages();
@@ -110,7 +116,7 @@ export default function CatViewer() {
     }
 
     observerRef.current = new IntersectionObserver(loadMore, {
-      rootMargin: "40px",
+      rootMargin: "10px",
       threshold: 1.0,
     });
 
@@ -153,7 +159,7 @@ export default function CatViewer() {
         {!images && <div>No images</div>}
       </div>
       {/* 무한스크롤 옵저버 */}
-      <div ref={loadMoreRef} className="h-10"></div>
+      {!isLoading && <div ref={loadMoreRef} className="h-[10px] mt-[16px]"></div>}
 
       {/* 스켈레톤 UI */}
       {isLoading && (
