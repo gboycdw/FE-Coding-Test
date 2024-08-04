@@ -146,9 +146,10 @@ export default function CatViewer() {
       {/* 무한스크롤 옵저버 */}
       <div ref={loadMoreRef} className="h-10"></div>
 
+      {/* 스켈레톤 UI */}
       {isLoading && (
         <div className="flex space-x-4 justify-center mt-4">
-          {Array.from({ length: 3 }).map((_, columnIndex) => (
+          {Array.from({ length: columnCount }).map((_, columnIndex) => (
             <div key={columnIndex} className={`flex-1 space-y-4 ${skeletonMinWidth}`}>
               {Array.from({ length: 2 }).map((_, rowIndex) => (
                 <SkeletonImages key={rowIndex} />
