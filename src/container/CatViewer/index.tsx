@@ -19,6 +19,9 @@ export default function CatViewer() {
   const isMobile = useMediaQuery({
     query: "(max-width:480px)",
   });
+  const isDesktop = useMediaQuery({
+    query: "(min-width:769px)",
+  });
 
   const [showEntireMode, setShowEntireMode] = useState<ImagePositionType>({
     show: false,
@@ -50,15 +53,18 @@ export default function CatViewer() {
   }, []);
 
   useEffect(() => {
+    if (isDesktop) setColumnCount(3);
     if (isTablet) setColumnCount(2);
     if (isMobile) setColumnCount(1);
+  }, [isDesktop, isTablet, isMobile]);
 
+  useEffect(() => {
     const columns: CatViewerImageType[][] = Array.from({ length: columnCount }, () => []);
     originalImages.forEach((image: CatViewerImageType, index: number) => {
       columns[index % columnCount].push(image);
     });
     setImages(columns);
-  }, [isTablet, isMobile, originalImages]);
+  }, [columnCount, originalImages]);
 
   // 이미지 확대 핸들러
   const handleClick = (image: CatViewerImageType, index: number) => {
@@ -119,10 +125,13 @@ export default function CatViewer() {
     };
   }, [loadMore]);
 
-  // 스켈레톤 UI 관련 상수
-  const skeletonMinWidth = `min-w-[${900 / columnCount}px]`;
-
-  if (images.length === 0) return <div>Loading...</div>;
+  // 이미지가 하나도 없는 경우
+  if (!isLoading && originalImages.length === 0)
+    return (
+      <div className="w-full flex justify-center">
+        <div className="flex">No Images</div>
+      </div>
+    );
 
   return (
     <div className="w-full">
@@ -148,14 +157,18 @@ export default function CatViewer() {
 
       {/* 스켈레톤 UI */}
       {isLoading && (
-        <div className="flex space-x-4 justify-center mt-4">
-          {Array.from({ length: columnCount }).map((_, columnIndex) => (
-            <div key={columnIndex} className={`flex-1 space-y-4 ${skeletonMinWidth}`}>
-              {Array.from({ length: 2 }).map((_, rowIndex) => (
-                <SkeletonImages key={rowIndex} />
-              ))}
-            </div>
-          ))}
+        <div className={`flex space-x-4 justify-center mt-[16px]`}>
+          {Array.from({ length: columnCount }).map((_, columnIndex) => {
+            return (
+              <div key={columnIndex} className={`flex-1 space-y-4 w-full`}>
+                {Array.from({ length: 2 }).map((_, rowIndex) => (
+                  <div key={rowIndex}>
+                    <SkeletonImages key={rowIndex} />
+                  </div>
+                ))}
+              </div>
+            );
+          })}
         </div>
       )}
 
