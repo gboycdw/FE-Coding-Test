@@ -1,15 +1,24 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getCatImages } from "@api/controller/CatViewer.controller";
 import { CatViewerImageType, ImagePositionType } from "@types";
 import { useMediaQuery } from "react-responsive";
-import { DEFAULT_IMAGES } from "./default_images";
+
 import { makeTransitionString } from "@tools/makeTransitionString";
+import SkeletonImages from "./skeletonImages";
 
 export default function CatViewer() {
-  const [originalImages, setOriginalImages] = useState<CatViewerImageType[]>(DEFAULT_IMAGES);
+  const [originalImages, setOriginalImages] = useState<CatViewerImageType[]>([]);
   const [images, setImages] = useState<CatViewerImageType[][]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [columnCount, setColumnCount] = useState(3);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [page, setPage] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+  const isTablet = useMediaQuery({
+    query: "(max-width:768px)",
+  });
+  const isMobile = useMediaQuery({
+    query: "(max-width:480px)",
+  });
 
   const [showEntireMode, setShowEntireMode] = useState<ImagePositionType>({
     show: false,
@@ -20,30 +29,29 @@ export default function CatViewer() {
     height: 0,
   });
 
+  // 이미지 클릭 시 확대 관련 ref
   const imageRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  const isTablet = useMediaQuery({
-    query: "(max-width:768px)",
-  });
-  const isMobile = useMediaQuery({
-    query: "(max-width:480px)",
-  });
+  // 무한스크롤 관련 ref
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  // 리렌더링을 방지해야 함
+  const fetchImages = async () => {
+    setIsLoading(true);
+    const data = await getCatImages({ limit: 30, page });
+    setOriginalImages((prevImages) => [...prevImages, ...data.data]);
+    setPage((prevPage) => prevPage + 1);
+    setIsLoading(false);
+  };
+
+  // 이미지 최초 로딩
   useEffect(() => {
-    const getImagesFn = async () => {
-      setIsLoading(true);
-      const data = await getCatImages({ limit: 20, page: 2 });
-      setOriginalImages(data.data);
-      setIsLoading(false);
-    };
-    getImagesFn();
+    fetchImages();
   }, []);
 
   useEffect(() => {
-    let columnCount = 3;
-    if (isTablet) columnCount = 2;
-    if (isMobile) columnCount = 1;
+    if (isTablet) setColumnCount(2);
+    if (isMobile) setColumnCount(1);
 
     const columns: CatViewerImageType[][] = Array.from({ length: columnCount }, () => []);
     originalImages.forEach((image: CatViewerImageType, index: number) => {
@@ -78,7 +86,43 @@ export default function CatViewer() {
     }, 500);
   };
 
-  if (isLoading || images.length === 0) return <div>Loading...</div>;
+  // 무한스크롤 콜백 함수
+  const loadMore = useCallback(
+    (entries: IntersectionObserverEntry[]) => {
+      const target = entries[0];
+      if (target.isIntersecting && !isLoading) {
+        fetchImages();
+      }
+    },
+    [isLoading],
+  );
+
+  // 무한스크롤 옵저버 훅
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    observerRef.current = new IntersectionObserver(loadMore, {
+      rootMargin: "40px",
+      threshold: 1.0,
+    });
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [loadMore]);
+
+  // 스켈레톤 UI 관련 상수
+  const skeletonMinWidth = `min-w-[${900 / columnCount}px]`;
+
+  if (images.length === 0) return <div>Loading...</div>;
 
   return (
     <div className="w-full">
@@ -99,6 +143,22 @@ export default function CatViewer() {
         ))}
         {!images && <div>No images</div>}
       </div>
+      {/* 무한스크롤 옵저버 */}
+      <div ref={loadMoreRef} className="h-10"></div>
+
+      {isLoading && (
+        <div className="flex space-x-4 justify-center mt-4">
+          {Array.from({ length: 3 }).map((_, columnIndex) => (
+            <div key={columnIndex} className={`flex-1 space-y-4 ${skeletonMinWidth}`}>
+              {Array.from({ length: 2 }).map((_, rowIndex) => (
+                <SkeletonImages key={rowIndex} />
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 이미지 확대 기능 */}
       {showEntireMode.show && (
         <div
           className={`fixed inset-0 z-50 flex items-center justify-center transition-all duration-500 ${isTransitioning ? "bg-black bg-opacity-75" : "bg-transparent"}`}
