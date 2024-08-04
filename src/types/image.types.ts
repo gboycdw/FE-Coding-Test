@@ -1,3 +1,12 @@
+export interface ImagePositionType {
+  show: boolean;
+  url: string;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
 export interface CatViewerImageType {
   categories?: CatCategoryType[];
   breeds?: CatBreedType[];
