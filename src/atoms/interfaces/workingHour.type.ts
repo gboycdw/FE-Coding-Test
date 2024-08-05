@@ -1,4 +1,4 @@
-export type weekDay = "sunday" | "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday";
+export type weekDay = "Sunday" | "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday" | "Saturday";
 export type RangeInputDataType = {
   index: number;
   start: string;
