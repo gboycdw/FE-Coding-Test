@@ -1,4 +1,4 @@
-import WorkingHour from "../container/WorkingHouer";
+import WorkingHour from "../container/WorkingHour";
 
 export default function WorkingHourPage() {
   return (
