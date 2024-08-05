@@ -6,6 +6,9 @@ import envCompatiblePlugin from "vite-plugin-env-compatible";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), envCompatiblePlugin(/* options */)],
+  server: {
+    port: 5174,
+  },
   define: {
     "process.env": process.env, // process.env를 전달
   },
