@@ -11,7 +11,7 @@ export default function SelectorInput() {
         <div className="relative">
           <div className="flex justify-between border rounded-md w-[160px] h-[40px] pl-7 pr-2 py-3 items-center hover:border-blue-300">
             {selectedTime}
-            <div className="text-[10px]">▼</div>
+            <div className="text-[10px] text-gray-400">▼</div>
           </div>
           <div className="absolute top-[45px] h-[225px] overflow-y-scroll border rounded-md">
             {SELECTOR_INPUT_OPTION.map((time: TimeOption, index: number) => {
