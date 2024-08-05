@@ -17,6 +17,7 @@ export default function WorkingHour() {
                 <div key={index} className="flex gap-2">
                   <RangeInput day={day as weekDay} index={table.index} />
                   <div className="flex items-center gap-4">
+                    {/* 아래 버튼의 기능 구현, row 추가 시 workingHourTable 수정되고, 리렌더링하도록 useEffect 추가 */}
                     {rangeInputCount > 0 && <div>X</div>}
                     {index === rangeInputCount - 1 && <div>➕</div>}
                   </div>
