@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelectorInput, { TimeOption } from "./selectorInput";
-import { weekDay } from "@atoms";
+import { weekDay, workingHourState } from "@atoms";
+import { useRecoilState } from "recoil";
 
 interface RangeInputProps {
   day: weekDay;
@@ -8,9 +9,16 @@ interface RangeInputProps {
 }
 
 export default function RangeInput(props: RangeInputProps) {
-  const [selectedTimeEnd, setSelectedTimeEnd] = useState<TimeOption>("00:00");
-  const [selectedTimeStart, setSelectedTimeStart] = useState<TimeOption>("00:00");
-  // 아래 selector에서 props로 받은 열의 table을 직접 수정하도록 수정 필요함
+  const { day, index } = props;
+  const [workingHourTable, setWorkingHourTable] = useRecoilState(workingHourState);
+
+  const [selectedTimeStart, setSelectedTimeStart] = useState<TimeOption>(workingHourTable[day]?.[index]?.start || "00:00");
+  const [selectedTimeEnd, setSelectedTimeEnd] = useState<TimeOption>(workingHourTable[day]?.[index]?.end || "00:00");
+
+  useEffect(() => {
+    setWorkingHourTable((prev) => ({ ...prev, [day]: [...prev[day].map((item) => (item.index === index ? { index, start: selectedTimeStart, end: selectedTimeEnd } : item))] }));
+  }, [selectedTimeStart, selectedTimeEnd]);
+
   return (
     <div>
       <div className="flex gap-2 items-center">
