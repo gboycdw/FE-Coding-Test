@@ -9,3 +9,9 @@ export const workingHourState = atom<WorkingHourTableType>({
   default: DEFAULT_WORKING_HOUR_TABLE,
   effects_UNSTABLE: [persistAtom],
 });
+
+export const savedWorkingHourState = atom<WorkingHourTableType>({
+  key: "savedWorkingHourState",
+  default: DEFAULT_WORKING_HOUR_TABLE,
+  effects_UNSTABLE: [persistAtom],
+});

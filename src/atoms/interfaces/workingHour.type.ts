@@ -4,6 +4,7 @@ export type RangeInputDataType = {
   start: string;
   end: string;
 };
+
 export type WorkingHourTableType = {
   [key in weekDay]: RangeInputDataType[];
 };
