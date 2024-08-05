@@ -1,5 +1,5 @@
 import { DEFAULT_WORKING_HOUR_TABLE, RangeInputDataType, weekDay, WorkingHourTableType } from "@atoms";
-import { somethingChangeState } from "@atoms/states/somethingChanged.stats";
+import { somethingChangeState } from "@atoms/states/somethingChanged.state";
 import RangeInput from "@components/common/rangeInput";
 import { Dispatch, SetStateAction, useState } from "react";
 
