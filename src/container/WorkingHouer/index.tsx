@@ -1,3 +1,11 @@
+import RangeInput from "@components/common/rangeInput";
+import SelectorInput from "@components/common/selectorInput";
+
 export default function WorkingHour() {
-  return <div>ㄱㅁㅇ</div>;
+  return (
+    <div>
+      <SelectorInput />
+      {/* <RangeInput /> */}
+    </div>
+  );
 }
