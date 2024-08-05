@@ -1,7 +1,13 @@
 import { useState } from "react";
 import SelectorInput, { TimeOption } from "./selectorInput";
+import { weekDay } from "@atoms";
 
-export default function RangeInput() {
+interface RangeInputProps {
+  day: weekDay;
+  index: number;
+}
+
+export default function RangeInput(props: RangeInputProps) {
   const [selectedTimeEnd, setSelectedTimeEnd] = useState<TimeOption>("00:00");
   const [selectedTimeStart, setSelectedTimeStart] = useState<TimeOption>("00:00");
   return (
