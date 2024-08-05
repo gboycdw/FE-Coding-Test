@@ -39,10 +39,10 @@ export default function SelectorInput(props: SelectorInputProps) {
             <div className="text-[10px] text-gray-400">▼</div>
           </div>
           {showDropdownList && (
-            <div ref={dropdownRef} className="absolute top-[45px] h-[225px] overflow-y-scroll border rounded-md">
+            <div ref={dropdownRef} className="absolute top-[45px] h-[225px] flex flex-col py-1 gap-1 overflow-y-scroll border rounded-md">
               {SELECTOR_INPUT_OPTION.map((time: TimeOption, index: number) => {
                 return (
-                  <div key={index} className="px-2 ">
+                  <div key={index} className="px-2">
                     <div
                       className={`w-[130px] h-[40px] flex justify-start cursor-pointer items-center px-5 py-3 rounded-md ${
                         time === selectedTime ? "bg-blue-50" : ""
