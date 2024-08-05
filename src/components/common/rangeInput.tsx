@@ -1,22 +1,31 @@
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import SelectorInput, { TimeOption } from "./selectorInput";
-import { weekDay, workingHourState } from "@atoms";
-import { useRecoilState } from "recoil";
+import { weekDay, WorkingHourTableType } from "@atoms";
+import { useSetRecoilState } from "recoil";
+import { somethingChangeState } from "@atoms/states/somethingChanged.stats";
 
 interface RangeInputProps {
   day: weekDay;
   index: number;
+  workingHourTable: WorkingHourTableType;
+  setWorkingHourTable: Dispatch<SetStateAction<WorkingHourTableType>>;
 }
 
 export default function RangeInput(props: RangeInputProps) {
-  const { day, index } = props;
-  const [workingHourTable, setWorkingHourTable] = useRecoilState(workingHourState);
+  const { day, index, workingHourTable, setWorkingHourTable } = props;
 
-  const [selectedTimeStart, setSelectedTimeStart] = useState<TimeOption>(workingHourTable[day]?.[index]?.start || "00:00");
-  const [selectedTimeEnd, setSelectedTimeEnd] = useState<TimeOption>(workingHourTable[day]?.[index]?.end || "00:00");
+  const initialStart = workingHourTable[day]?.[index]?.start || "00:00";
+  const initialEnd = workingHourTable[day]?.[index]?.end || "00:00";
+
+  const [selectedTimeStart, setSelectedTimeStart] = useState<TimeOption>(initialStart);
+  const [selectedTimeEnd, setSelectedTimeEnd] = useState<TimeOption>(initialEnd);
+  const setSomethingChangeState = useSetRecoilState(somethingChangeState);
 
   useEffect(() => {
-    setWorkingHourTable((prev) => ({ ...prev, [day]: [...prev[day].map((item) => (item.index === index ? { index, start: selectedTimeStart, end: selectedTimeEnd } : item))] }));
+    if (selectedTimeStart !== initialStart || selectedTimeEnd !== initialEnd) {
+      setWorkingHourTable((prev) => ({ ...prev, [day]: [...prev[day].map((item) => (item.index === index ? { index, start: selectedTimeStart, end: selectedTimeEnd } : item))] }));
+      setSomethingChangeState(true);
+    }
   }, [selectedTimeStart, selectedTimeEnd]);
 
   return (
