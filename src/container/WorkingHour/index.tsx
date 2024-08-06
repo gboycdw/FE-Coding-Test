@@ -33,6 +33,7 @@ export default function WorkingHour(props: WorkingHourProps) {
                     const newTable = [...prev[day as weekDay], { index: 0, start: 0, end: 0 }];
                     return { ...prev, [day as weekDay]: newTable };
                   });
+                  setSomethingChangeState(true);
                 }}
               >
                 ➕
@@ -41,14 +42,14 @@ export default function WorkingHour(props: WorkingHourProps) {
           );
 
         return (
-          <div className="flex gap-3 items-start py-3" key={weekIndex + resetKey}>
+          <div className="flex gap-3 items-start py-3" key={(weekIndex + resetKey) * 10}>
             <div className="w-[120px] pt-[16px]">{day}</div>
             <div className="flex flex-col">
               {weekDayData.map((table: RangeInputDataType, rangeIndex: number) => {
                 const rangeInputCount = weekDayData.length;
 
                 return (
-                  <div key={rangeIndex} className="flex gap-2 py-2">
+                  <div key={rangeIndex * 100} className="flex gap-2 py-2">
                     <RangeInput day={day as weekDay} index={rangeIndex} workingHourTable={workingHourTable} setWorkingHourTable={setWorkingHourTable} />
                     <div className="flex items-center gap-4">
                       {rangeInputCount > 0 && (

@@ -29,6 +29,7 @@ export default function RangeInput(props: RangeInputProps) {
   useEffect(() => {
     if (selectedTimeStart !== initialStart || selectedTimeEnd !== initialEnd) {
       setSomethingChangeState(true);
+
       if (TimeValidator(selectedTimeStart, selectedTimeEnd)) {
         setTimeValidator((prev) => ({ ...prev, [day]: true }));
         setTimeWrong(false);
@@ -42,8 +43,6 @@ export default function RangeInput(props: RangeInputProps) {
         ...prev,
         [day]: [...prev[day].map((item) => (item.index === index ? { index, start: selectedTimeStart, end: selectedTimeEnd } : item))],
       }));
-    } else {
-      setSomethingChangeState(false);
     }
   }, [selectedTimeStart, selectedTimeEnd]);
 
